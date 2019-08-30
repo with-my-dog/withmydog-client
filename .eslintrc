@@ -1,12 +1,12 @@
 {
-    "extends": ["react-app", "airbnb", "prettier"],
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": ["react-app", "airbnb", "plugin:prettier/recommended"],
     "rules": {
         "react/prefer-stateless-function": 0,
         "react/jsx-one-expression-per-line": 0,
         "react/prop-types": 0
-    },
-    "env": {
-        "browser": true,
-        "es6": true
     }
 }

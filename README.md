@@ -16,8 +16,8 @@
 -   개발 환경
 
     -   Language - `TypeScript v3.5.3` / `JavaScript ES6+` / `HTML5` / `CSS3`
-    -   Library - `react v16.9.0` / `redux v4.0.4` / `react-redux v7.1.0` / `redux-saga v1.0.5` / `axios v0.19.0` / `styled-components v4.3.2`
-    -   DevTools - `eslint-config-airbnb v18.0.1` / `eslint-config-prettier v6.1.0` / `redux-devtools-extension v2.13.8`
+    -   Library - `react v16.9.0` / `redux v4.0.4` / `react-redux v7.1.0` / `redux-saga v1.0.5` / `react-router-dom v5.0.1` / `styled-components v4.3.2` / `immer v3.2.0` / `axios v0.19.0`
+    -   DevTools - `eslint-config-airbnb v18.0.1` / `eslint-config-prettier v6.1.0` / `eslint-plugin-prettier v3.1.0` / `redux-devtools-extension v2.13.8`
     -   This Project created by `Create-React-App v3.0.1` (includes babel, webpack configs)
     -   Etc - `RESTful API` / `Kakao Map API` / `Slack` / `Notion`
 
