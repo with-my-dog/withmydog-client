@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Place from './Place';
 
-const App: React.FC = () => {
-    return <div>React is running...</div>;
-};
+class App extends Component<{}, {}> {
+    render() {
+        return (
+            <Router>
+                <Route path="/place" component={Place} />
+            </Router>
+        );
+    }
+}
 
 export default App;
