@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Map from '../components/Map';
-
-export default class MapContainer extends Component<{}, {}> {
+import { List } from '../internal';
+export class MapContainer extends Component<{}, {}> {
     render() {
-        return <Map />;
+        // return <Map />;
+        return <List />
     }
 }
