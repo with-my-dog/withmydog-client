@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { List } from '../internal';
 
 import Map from '../components/Map';
 
@@ -19,6 +20,7 @@ export default class MapContainer extends Component<{}, {}> {
     };
 
     render() {
-        return <Map />;
+        // return <Map />;
+        return <List />;
     }
 }
