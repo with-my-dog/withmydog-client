@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import MapContainer from '../containers/MapContainer';
+import { MapContainer } from '../internal';
 
 export class Place extends Component<{}, {}> {
     render() {
