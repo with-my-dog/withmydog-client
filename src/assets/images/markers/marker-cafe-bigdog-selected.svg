@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="88" height="42" viewBox="0 0 88 42">
+    <defs>
+        <filter id="a" width="119.5%" height="144.4%" x="-9.8%" y="-22.2%" filterUnits="objectBoundingBox">
+            <feOffset dy="1" in="SourceAlpha" result="shadowOffsetOuter1"/>
+            <feGaussianBlur in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="1.5"/>
+            <feColorMatrix in="shadowBlurOuter1" result="shadowMatrixOuter1" values="0 0 0 0 0.160784314 0 0 0 0 0.164705882 0 0 0 0 0.168627451 0 0 0 0.3 0"/>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g filter="url(#a)" transform="translate(3 2)">
+            <path fill="#FEFEFE" d="M66 0c8.837 0 16 7.163 16 16s-7.163 16-16 16H44.35l-2.116 3.253c-.579.891-1.602 1-2.283.243a1.943 1.943 0 0 1-.186-.243L37.65 32H16C7.163 32 0 24.837 0 16S7.163 0 16 0h50z"/>
+            <g transform="translate(2 2)">
+                <circle cx="14" cy="14" r="14" fill="#997400"/>
+                <path fill="#FFF" d="M19.333 8H10c-.733 0-1.333.6-1.333 1.333v5.334a2.666 2.666 0 0 0 2.666 2.666h4A2.666 2.666 0 0 0 18 14.667v-2h1.333c.734 0 1.334-.6 1.334-1.334v-2c0-.733-.6-1.333-1.334-1.333zm0 3.333H18v-2h1.333v2zM8 20h10.667c.366 0 .666-.3.666-.667 0-.366-.3-.666-.666-.666H8c-.367 0-.667.3-.667.666 0 .367.3.667.667.667z"/>
+            </g>
+        </g>
+        <text fill="#4D5256" font-family="AppleSDGothicNeo-SemiBold, Apple SD Gothic Neo" font-size="12" font-weight="500" transform="translate(3 2)">
+            <tspan x="38" y="18">대형견</tspan>
+        </text>
+    </g>
+</svg>
