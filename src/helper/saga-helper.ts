@@ -8,7 +8,7 @@ export function* handleRequest<T>(api: any, asyncAction: AsyncAction, action: Ac
   try {
     yield put(asyncAction.requestAction());
     const response = yield call(api, payload);
-    yield put(asyncAction.successAction());
+    yield put(asyncAction.successAction(response.data));
     console.log('response', response);
   } catch(e) {
     if (e.response) {

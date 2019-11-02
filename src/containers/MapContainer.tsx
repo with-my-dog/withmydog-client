@@ -3,90 +3,47 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { bindActionCreators } from 'redux';
-
 import {
     Map,
     selectMarkerAction,
+    getStoresAction,
     RootState,
+    StoreType,
+    Store,
+    GeoLocationBoundary,
 } from '../internal';
 
 const debounce = require('lodash/debounce');
-
 const myLocationMarker = require('../assets/images/markers/my-location.svg');
 
 declare const daum: any;
 
-interface LatLng {
-    Lat: number;
-    Lng: number;
-}
-
-enum StoreType {
-    cafe = 'CAFE',
-    restaurant = 'RESTAURANT',
-    pub = 'PUB',
-}
-
-interface Marker {
-    id: string;
-    type: StoreType;
-    position: LatLng;
-    canBigDog?: boolean;
-}
+const updateMyPositionDelay = 5000;
 
 const MapWrapper = styled.div`
     height: 90%;
 `;
 
-const dummyMarkerList = [
-    {
-        id: '1',
-        type: StoreType.cafe,
-        position: {
-            Lat: 37.552617, Lng: 126.904614
-        }
-    },
-    {
-        id: '2',
-        type: StoreType.restaurant,
-        position: {
-            Lat: 37.553617, Lng: 126.905614
-        },
-        canBigDog: true,
-    },
-    {
-        id: '3',
-        type: StoreType.pub,
-        position: {
-            Lat: 37.551617, Lng: 126.903614
-        }
-    },
-    {
-        id: '4',
-        type: StoreType.cafe,
-        position: {
-            Lat: 37.551617, Lng: 126.903614
-        }
-    },
-]
-
 interface Props {
     selectedMarker?: string;
+    stores: Store[];
     selectMarkerAction?(markerId: string): void;
+    getStoresAction?(GeoLocationBoundary: GeoLocationBoundary): void;
 }
 
 class MapContainerComp extends Component<Props, {}> {
-    map: any;
+    mapCluster: any;
+    // map: any;
     myLoaction: any;
     myLocationMarker: any;
     updateLocationInterval!: number;
-
+    
     componentDidMount() {
         this.initializeMap();
+        
         this.updateLocationInterval = setInterval(() => {
             this.drawMyPosition();
-        }, 5000);
-        console.log('props', this.props);
+        }, updateMyPositionDelay);
     }
 
     componentWillUnmount() {
@@ -94,7 +51,11 @@ class MapContainerComp extends Component<Props, {}> {
     }
 
     componentWillReceiveProps(nextProps: Props, nextState: {}) {
-        console.log('new props', nextProps.selectedMarker);
+        //
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        this.updateStore(this.props.stores);
     }
 
     private initializeMap = (): void => {
@@ -103,22 +64,43 @@ class MapContainerComp extends Component<Props, {}> {
             center: new daum.maps.LatLng(37.552617, 126.904614),
             level: 3,
         };
-        this.map = new daum.maps.Map(mapEl, mapOptions);
-        daum.maps.event.addListener(this.map, 'bounds_changed', this.debouncedBoundsChanged);
-        this.drawMarkers(dummyMarkerList);
+        const map = new daum.maps.Map(mapEl, mapOptions);
+        daum.maps.event.addListener(map, 'bounds_changed', this.debouncedBoundsChanged);
+        this.mapCluster = new daum.maps.MarkerClusterer({
+            map: map,
+            markers: [],
+            minLevel: 10,
+        })
     };
 
     // debounce 적용된 새로운 맵 바운더리 정보
     private debouncedBoundsChanged = debounce((): void => {
         // 지도의 bounds 기준은 남서쪽, 동북쪽
-        const newBounds = this.map.getBounds();
+        const newBounds = this.mapCluster.getMap().getBounds();
         console.log('bounds', newBounds.toString());
         console.log('SouthWest', newBounds.getSouthWest().getLat(), newBounds.getSouthWest().getLng());
         console.log('NorthEast', newBounds.getNorthEast().getLat(), newBounds.getNorthEast().getLng());
+        const sw = {
+            Lat: newBounds.getSouthWest().getLat(),
+            Lng: newBounds.getSouthWest().getLng(),
+        }
+        const ne = {
+            Lat: newBounds.getSouthWest().getLat(),
+            Lng: newBounds.getSouthWest().getLng(),
+        }
+        if (this.props.getStoresAction) {
+            this.props.getStoresAction({sw, ne});
+        }
     }, 200);
 
-    private getMarkerImage = (markerData: Marker) => {
-        const {type, canBigDog} = markerData;
+    private updateStore = (storeData: Store[]) => {
+        this.mapCluster.clear();
+        const storeMarkers = this.getMarkers(storeData);
+        this.mapCluster.addMarkers(storeMarkers);
+    }
+
+    private getMarkerImage = (storeData: Store) => {
+        const {type, canBigDog} = storeData;
         let markerImage = 'marker';
         switch(type) {
             case StoreType.cafe:
@@ -145,7 +127,8 @@ class MapContainerComp extends Component<Props, {}> {
         return canBigDog ? {width: 82, height: 36} : {width: 32, height: 36};
     }
 
-    private drawMarkers = (markerList: Marker[]): void => {
+    private getMarkers = (markerList: Store[]): any[] => {
+        const markers: any[] = [];
         for( const markerData of markerList ) {
             const markerSize = this.getMarkerSize(markerData.canBigDog);
             const markerImgSize = new daum.maps.Size(markerSize.width, markerSize.height);
@@ -155,7 +138,8 @@ class MapContainerComp extends Component<Props, {}> {
                 position: markerPosition,
                 image: markerImg,
             });
-            marker.setMap(this.map);
+            // marker.setMap(this.map);
+            markers.push(marker);
             const onMarkerClickHandler = () => {
                 // 여기서, 데이터 가져오는 액션 호출
                 console.log('clicked marker type is: ', markerData.type);
@@ -165,6 +149,7 @@ class MapContainerComp extends Component<Props, {}> {
             }
             daum.maps.event.addListener(marker, 'click', onMarkerClickHandler);
         }
+        return markers;
     }
 
     private drawMyPosition() {
@@ -181,7 +166,7 @@ class MapContainerComp extends Component<Props, {}> {
                 position: markerPosition,
                 image: markerImg,
             });
-            this.myLocationMarker.setMap(this.map);
+            // this.myLocationMarker.setMap(this.map);
         } else {
             this.myLocationMarker.setPosition(new daum.maps.LatLng(this.myLoaction.coords.latitude, this.myLoaction.coords.longitude))
         }
@@ -208,51 +193,20 @@ class MapContainerComp extends Component<Props, {}> {
                 </MapWrapper>
             </>
         );
-        // return <List />;
     }
 }
 
-function mapStateToProps(state: RootState): any {
+function mapStateToProps(state: RootState): Props {
     return {
         selectedMarker: state.mapReducer.selectedMarker,
+        stores: state.mapReducer.stores,
     }
 }
 function mapDispatchToProps(dispatch: Dispatch) {
     return bindActionCreators({
         selectMarkerAction: selectMarkerAction,
+        getStoresAction: getStoresAction,
     }, dispatch)
 }
 
 export const MapContainer = connect(mapStateToProps, mapDispatchToProps)(MapContainerComp);
-
-// private drawMarkers = (markerList: Marker[]): void => {
-//     for( const markerData of markerList ) {
-//         // const markerImgSize = new daum.maps.Size(40, 40);
-//         // const markerImg = new daum.maps.MarkerImage(dummyMarker, markerImgSize);
-//         const markerPosition = new daum.maps.LatLng(markerData.position.Lat, markerData.position.Lng);
-//         // const marker = new daum.maps.Marker({
-//         //     position: markerPosition,
-//         //     image: markerImg,
-//         // });
-//         // marker.setMap(this.map);
-//         const markerId = `marker-${markerData.id}`;
-//         const content = `
-//         <div style="${markerStyle}" id="${markerId}">
-//             <img src="${this.getMarkerImage(markerData.type)}" /> test
-//         </div>`;
-//         const customOverlay = new daum.maps.CustomOverlay({
-//             position: markerPosition,
-//             content: content   
-//         });
-//         customOverlay.setMap(this.map);
-//         const renderedCustomOverlay = document.getElementById(markerId);
-//         const onMarkerClickHandler = () => {
-//             // 여기서, 데이터 가져오는 액션 호출
-//             console.log('clicked marker type is: ', markerData.type);
-//         }
-//         if (!!renderedCustomOverlay) {
-//             renderedCustomOverlay.addEventListener('click', onMarkerClickHandler);
-//         }
-//         // daum.maps.event.addListener(marker, 'click', onMarkerClickHandler);
-//     }
-// }
