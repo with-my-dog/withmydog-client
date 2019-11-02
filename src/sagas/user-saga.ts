@@ -9,6 +9,6 @@ function* handleRequestCreateUser(action: Action<User>) {
 }
 export function* userSaga() {
   yield all([
-    takeLatest(createUserAction.TRIGGER, handleRequestCreateUser)
+    takeLatest(createUserAction.TRIGGER, handleRequestCreateUser),
   ]);
 }

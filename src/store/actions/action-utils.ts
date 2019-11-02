@@ -19,7 +19,7 @@ export interface AsyncAction<T = any> extends ActionType<string> {
   FULFILL: string;
 }
 
-enum REQUEST_STAGES {
+export enum REQUEST_STAGES {
   TRIGGER = 'TRIGGER', // 액션이 트리거 됨을 의미함, saga가 Middleware에서 훅하는 액션으로만 의미를 가짐
   REQUEST = 'REQUEST', // saga가 API를 호출하기 전에 dispatch되는 액션
   SUCCESS = 'SUCCESS', // 요청한 API의 response가 성공적으로 들어옴
